@@ -34,11 +34,18 @@ export class CountryController {
     @Param('id') id: number,
     @Body() updateCountryDto: UpdateCountryDto,
   ) {
+    if (!id || typeof id !== 'number' || id <= 0) {
+      throw new Error('NotFoundException ID is required');
+    }
+
     return await this.countryService.update(id, updateCountryDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
+    if (!id || typeof id !== 'number' || id <= 0) {
+      throw new Error('NotFoundException ID is required');
+    }
     return await this.countryService.remove(id);
   }
 }

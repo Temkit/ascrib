@@ -1,7 +1,14 @@
 // src/question/entities/answer-option.entity.ts
 
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Question } from './question.entity';
+import { ChoiceResponse } from './../../user-response/entities/choice-response.entity';
 
 @Entity()
 export class AnswerOption {
@@ -25,4 +32,10 @@ export class AnswerOption {
     onDelete: 'CASCADE', // Ensures deletion of answer options when the parent question is deleted
   })
   question: Question;
+
+  @OneToMany(
+    () => ChoiceResponse,
+    (choiceResponse) => choiceResponse.answerOption,
+  )
+  choiceResponses: ChoiceResponse[];
 }

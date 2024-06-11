@@ -46,6 +46,9 @@ export class ProviderController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: number): Promise<void> {
+    if (!id || typeof id !== 'number' || id <= 0) {
+      throw new Error('Invalid ID provided');
+    }
     await this.providerService.remove(id);
   }
 }

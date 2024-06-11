@@ -59,6 +59,9 @@ export class ProviderService {
   }
 
   async remove(id: number): Promise<void> {
+    if (!id || typeof id !== 'number' || id < 1) {
+      throw new NotFoundException(`Provider with ID ${id} not found`);
+    }
     const result = await this.providerRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Provider with ID ${id} not found`);

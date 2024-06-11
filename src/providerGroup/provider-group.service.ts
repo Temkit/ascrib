@@ -18,11 +18,12 @@ export class ProviderGroupService {
   ) {}
 
   async create(
-    createDto: CreateProviderGroupDto,
-  ): Promise<ReadProviderGroupDto> {
-    const providerGroup = this.providerGroupRepository.create(createDto);
-    await this.providerGroupRepository.save(providerGroup);
-    return this.transformToReadDto(providerGroup);
+    createProviderGroupDto: CreateProviderGroupDto,
+  ): Promise<ProviderGroup> {
+    const providerGroup = this.providerGroupRepository.create(
+      createProviderGroupDto,
+    );
+    return this.providerGroupRepository.save(providerGroup);
   }
 
   async findAll(): Promise<ReadProviderGroupDto[]> {
@@ -37,19 +38,18 @@ export class ProviderGroupService {
     }
     return this.transformToReadDto(providerGroup);
   }
-
   async update(
     id: number,
     updateDto: UpdateProviderGroupDto,
   ): Promise<ReadProviderGroupDto> {
-    const providerGroup = await this.providerGroupRepository.preload({
-      id: id,
-      ...updateDto,
-    });
+    const providerGroup = await this.providerGroupRepository.findOneBy({ id });
 
     if (!providerGroup) {
       throw new NotFoundException(`ProviderGroup with ID ${id} not found`);
     }
+
+    // Manually update the properties of the providerGroup entity
+    Object.assign(providerGroup, updateDto);
 
     await this.providerGroupRepository.save(providerGroup);
     return this.transformToReadDto(providerGroup);

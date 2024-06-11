@@ -47,6 +47,9 @@ export class UserController {
 
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<void> {
-    await this.userService.remove(id);
+    if (typeof id !== 'number') {
+      throw new Error('Invalid user id');
+    }
+    return this.userService.remove(id);
   }
 }

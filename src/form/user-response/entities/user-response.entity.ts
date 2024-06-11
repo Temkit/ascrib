@@ -4,8 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Question } from '../../question/entities/question.entity';
+import { ChoiceResponse } from './choice-response.entity';
 
 @Entity()
 export class UserResponse {
@@ -33,6 +35,12 @@ export class UserResponse {
 
   @Column({ nullable: true })
   choiceAnswerId?: number;
+
+  @OneToMany(
+    () => ChoiceResponse,
+    (choiceResponse) => choiceResponse.userResponse,
+  )
+  choiceResponses: ChoiceResponse[];
 
   @Column()
   responseDate: Date;
