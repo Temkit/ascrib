@@ -1,0 +1,10 @@
+aws ecr create-repository --repository-name nestjs-app-staging
+aws ecr create-repository --repository-name nestjs-app-production
+
+eksctl create cluster --name ascrib-cluster-staging --region eu-west-3 --nodegroup-name standard-workers --node-type t3.medium --nodes 2 --nodes-min 1 --nodes-max 3
+eksctl create cluster --name ascrib-cluster-production --region eu-west-3 --nodegroup-name standard-workers --node-type t3.medium --nodes 2 --nodes-min 1 --nodes-max 3
+
+aws eks --region eu-west-3 update-kubeconfig --name ascrib-cluster-staging
+aws eks --region eu-west-3 update-kubeconfig --name ascrib-cluster-production
+
+
