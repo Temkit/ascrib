@@ -7,8 +7,11 @@ import * as domains from './domains';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const allowedOrigins = [`https://*.${domains.base}`, 'http://localhost:3000'];
-
+  const allowedOrigins = [
+    /^https:\/\/.*\.ascrib\.xyz$/,
+    /^https:\/\/.*\.staging\.ascrib\.xyz$/,
+    'http://localhost:3000',
+  ];
   const config = new DocumentBuilder()
     .setTitle('API')
     .setDescription('The API description')
@@ -21,7 +24,11 @@ async function bootstrap() {
     origin: (origin, callback) => {
       if (
         !origin ||
-        allowedOrigins.some((allowedOrigin) => origin.match(allowedOrigin))
+        allowedOrigins.some((allowedOrigin) =>
+          typeof allowedOrigin === 'string'
+            ? origin === allowedOrigin
+            : origin.match(allowedOrigin),
+        )
       ) {
         callback(null, true);
       } else {
