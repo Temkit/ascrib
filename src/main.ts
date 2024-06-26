@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import * as domains from './domains';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const allowedOrigins = [`https://*.${domains.base}`, 'http://localhost:3000'];
 
   const config = new DocumentBuilder()
     .setTitle('API')
@@ -15,7 +18,16 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({
-    origin: 'http://localhost:3001', // Your frontend URL
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        allowedOrigins.some((allowedOrigin) => origin.match(allowedOrigin))
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
