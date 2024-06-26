@@ -1,10 +1,119 @@
-aws ecr create-repository --repository-name nestjs-app-staging
-aws ecr create-repository --repository-name nestjs-app-production
+# Ascrib Kubernetes Deployment
 
-eksctl create cluster --name ascrib-cluster-staging --region eu-west-3 --nodegroup-name standard-workers --node-type t3.medium --nodes 2 --nodes-min 1 --nodes-max 3
-eksctl create cluster --name ascrib-cluster-production --region eu-west-3 --nodegroup-name standard-workers --node-type t3.medium --nodes 2 --nodes-min 1 --nodes-max 3
+This project demonstrates how to deploy Ascrib application to Kubernetes (EKS) using Docker and GitHub Actions for CI/CD.
 
-aws eks --region eu-west-3 update-kubeconfig --name ascrib-cluster-staging
-aws eks --region eu-west-3 update-kubeconfig --name ascrib-cluster-production
+## Table of Contents
 
+- [Architecture Overview](#architecture-overview)
+- [Prerequisites](#prerequisites)
+- [Setup](#setup)
+- [Deployment](#deployment)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
 
+## Architecture Overview
+
+This project uses the following architecture:
+
+- **NestJS**: A progressive Node.js framework for building efficient and scalable server-side applications.
+- **Docker**: Used to containerize the Ascrib application.
+- **Amazon ECR (Elastic Container Registry)**: Stores our Docker images.
+- **Amazon EKS (Elastic Kubernetes Service)**: Manages our Kubernetes clusters.
+- **GitHub Actions**: Provides CI/CD pipeline for automated testing and deployment.
+
+We have separate environments for staging and production, each with its own EKS cluster and ECR repository.
+
+## Prerequisites
+
+- AWS Account
+- GitHub Account
+- Node.js and npm installed locally
+- Docker installed locally
+- kubectl installed locally
+- AWS CLI installed locally
+
+## Setup
+
+1. **AWS Setup**:
+   - Create an IAM user with appropriate permissions for EKS and ECR.
+   - Create two ECR repositories: one for staging and one for production.
+   - Create two EKS clusters: one for staging and one for production.
+
+2. **GitHub Setup**:
+   - Fork or clone this repository.
+   - Add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY as secrets in your GitHub repository.
+
+3. **Local Setup**:
+   - Clone the repository:
+     ```
+     git clone <repository-url>
+     cd <repository-name>
+     ```
+   - Install dependencies:
+     ```
+     npm install
+     ```
+
+4. **Docker Setup**:
+   - Create a Dockerfile in your project root (if not already present).
+
+5. **Kubernetes Setup**:
+   - Create deployment.yaml and service.yaml files in a `kubernetes` directory.
+
+6. **CI/CD Setup**:
+   - Create .github/workflows/deploy.yml for GitHub Actions.
+
+## Deployment
+
+1. **To Staging**:
+   - Push changes to the `staging` branch:
+     ```
+     git checkout -b staging
+     git push origin staging
+     ```
+   - GitHub Actions will automatically deploy to the staging EKS cluster.
+
+2. **To Production**:
+   - Merge changes from `staging` to `main`:
+     ```
+     git checkout main
+     git merge staging
+     git push origin main
+     ```
+   - GitHub Actions will automatically deploy to the production EKS cluster.
+
+## Testing
+
+1. **Staging**:
+   - After deployment, get the external IP:
+     ```
+     kubectl get service ascrib-app-service
+     ```
+   - Access your application using this IP/URL.
+   - Test all main functionalities.
+
+2. **Production**:
+   - Follow the same process as staging, but use the production EKS cluster.
+
+## Troubleshooting
+
+- If pods are not running:
+    kubectl get pods
+    kubectl describe pod <pod-name>
+
+- For logs:
+    kubectl logs <pod-name>
+    Copy- If services are not accessible:
+    kubectl get services
+    kubectl describe service <service-name>
+
+## Why This Architecture?
+
+- **NestJS**: Provides a robust framework for building scalable Node.js applications.
+- **Docker**: Ensures consistency across different environments and simplifies deployment.
+- **Kubernetes**: Offers powerful orchestration capabilities for managing containerized applications.
+- **EKS**: Provides a managed Kubernetes service, reducing operational overhead.
+- **ECR**: Offers secure, scalable, and reliable container image storage.
+- **GitHub Actions**: Automates the CI/CD process, ensuring quick and consistent deployments.
+
+This architecture allows for efficient development, easy scaling, and separation of concerns between environments.
