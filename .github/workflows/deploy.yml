@@ -26,7 +26,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ github.ref == 'refs/heads/main' && 'ascrib-app-production' || 'ascrib-app-staging' }}
+          ECR_REPOSITORY: ${{ github.ref == 'refs/heads/main' && 'ascrib-production' || 'ascrib-staging' }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -39,7 +39,7 @@ jobs:
       - name: Deploy to EKS
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ github.ref == 'refs/heads/main' && 'ascrib-app-production' || 'ascrib-app-staging' }}
+          ECR_REPOSITORY: ${{ github.ref == 'refs/heads/main' && 'ascrib-production' || 'ascrib-staging' }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           sed -i 's|${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}|'${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}'|' kubernetes/deployment.yaml
