@@ -7,8 +7,24 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(private authService: AuthService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const token = req.cookies['authToken'];
-    console.log('Cookies:', req.cookies); // Log cookies to verify
+    let token: string | undefined;
+
+    // Check for token in cookie
+    const cookieToken = req.cookies['authToken'];
+    if (cookieToken) {
+      token = cookieToken;
+    }
+
+    // If no cookie token, check for bearer token in Authorization header
+    if (!token) {
+      const authHeader = req.headers['authorization'];
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7); // Remove 'Bearer ' prefix
+      }
+    }
+
+    console.log('Token found:', token); // Log the token for debugging
+
     if (!token) {
       return res
         .status(401)
